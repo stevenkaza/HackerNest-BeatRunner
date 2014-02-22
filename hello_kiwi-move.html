@@ -6,11 +6,8 @@
 
 <body>
 
-	<p>ACCEL-X: </p><p id="accelerometer-x">0</p>
+	<p>Gyro Z </p> <p id="gyroZ">0</p>
 	
-	<p>Max Accel-x: </p><p id="max">0</p>
-	<p>Min Accel-x: </p><p id="min">0</p>
-	<p>Diff: </p><p id="diff">0</p>
 
 </body>
 
@@ -19,17 +16,14 @@
  var kiwisocket = io.connect('http://build.kiwiwearables.com:8080');
 // this stuff all runs once
  var toParse = null;
- var Ax = 0;
- var Ay = 0;
- var Az = 0;
- var Gx = 0;
+ var Gx = 0; // back leg significant
  var Gy = 0;
- var Gz = 0;
+ var Gz = 0; // side leg significant
  
- var max = 0;
- var min = 0;
- var diff = 0;
- var oldAx = 0;
+ var step = 0; // half step =1, full step = 2
+ var pos = false;
+ var neg = false;
+ var notMove = false;
 
 // Enter your device id and password here
 
@@ -43,39 +37,38 @@ kiwisocket.on('listen_response', function(data) { //listen response updates ever
 
 	toParse = JSON.parse(data.message); //reads json output from server of the current information from the kiwi
 
-	oldAx=Ax;
+	oldGz = Gz;
 	
-	Ax = parseFloat(toParse.ax); //read from json string
-	Ay = parseFloat(toParse.ay);
-	Az = parseFloat(toParse.az);  
+	//Ax = parseFloat(toParse.ax); //read from json string
+	//Ay = parseFloat(toParse.ay);
+	//Az = parseFloat(toParse.az);  
 
-	Gx = parseFloat(toParse.gx);
-	Gy = parseFloat(toParse.gy);
+	//Gx = parseFloat(toParse.gx);
+	//Gy = parseFloat(toParse.gy);
 	Gz = parseFloat(toParse.gz);
-
 	
-	$('#accelerometer-x').html(Ax); //make id tag work with it in html
-	$('#accelerometer-y').html(Ay);
-	$('#accelerometer-z').html(Az);
-
-	$('#gyroscope-x').html(Gx);
-	$('#gyroscope-y').html(Gy);
-	$('#gyroscope-z').html(Gz);
 	
-
-	if(Ax > max){ //checks if current more than original max
-		$('#max').html(Ax);
-		max = Ax;
-	}
-	else if(Ax < min){
-		$('#min').html(Ax);
-		min = Ax;
+	if(Gz > 0){
+		pos = true;
+		neg = false;
+		moving = true;	
+	} 
+	else if (Gz < 0 && pos = true) //turn around 
+	{
+		step++;
 	}
 	
-	diff = oldAx-Ax;
-	$('#diff').html(diff);
+	
+	$('#gyroZ').html(Gz);
+
+	if(step%2 == 0)
+	{
+		
+
 	
 });
+
+	
 
 </script>
 
